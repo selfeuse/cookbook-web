@@ -16,7 +16,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import useStyles from "./styles";
-import { deleteRecipe } from "../../../actions/recipes";
+import { deleteRecipe } from "../../../../actions/recipes";
 
 const Recipe = ({ recipe, setCurrentId }) => {
   const classes = useStyles();

@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Container, Grow, Grid, Paper, AppBar, TextField, Button } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ChipInput from 'material-ui-chip-input';
 
-import Recipes from '../Recipes/Recipes';
+import Recipes from '../Recipe/Recipes/Recipes';
 import Form from '../Form/Form';
-import { getRecipes, getRecipesBySearch } from '../../actions/recipes';
+import { getRecipesBySearch } from '../../actions/recipes';
 import useStyles from './styles';
 import Pagination from '../Pagination';
 
