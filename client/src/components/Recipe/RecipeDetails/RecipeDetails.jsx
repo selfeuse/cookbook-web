@@ -10,7 +10,7 @@ import moment from "moment";
 import { useParams, useNavigate } from "react-router-dom";
 
 import useStyles from "./styles";
-import { getRecipe, getRecipesBySearch } from "../../actions/recipes";
+import { getRecipe, getRecipesBySearch } from "../../../actions/recipes";
 
 const RecipeDetails = () => {
   const { recipe, recipes, isLoading } = useSelector((state) => state.recipes);

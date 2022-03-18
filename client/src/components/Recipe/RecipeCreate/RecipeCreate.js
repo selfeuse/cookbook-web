@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   TextField,
   Button,
@@ -8,11 +8,11 @@ import {
 } from "@material-ui/core";
 import { Rating } from "@material-ui/lab";
 import FileBase from "react-file-base64";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import useStyles from "./styles";
-import { createRecipe, updateRecipe } from "../../actions/recipes";
+import { createRecipe } from "../../../actions/recipes";
 
 const dishTypes = [
   {
@@ -35,7 +35,7 @@ const dishTypes = [
   },
 ];
 
-const Form = ({ currentId, setCurrentId }) => {
+const RecipeCreate = () => {
   const classes = useStyles();
   const user = JSON.parse(localStorage.getItem("profile"));
   const [recipeData, setRecipeData] = useState({
@@ -46,28 +46,15 @@ const Form = ({ currentId, setCurrentId }) => {
     rate: 0,
     tags: "",
   });
-  const recipe = useSelector((state) =>
-    currentId ? state.recipes.recipes.find((p) => p._id === currentId) : null
-  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (recipe) setRecipeData(recipe);
-  }, [recipe]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (currentId) {
-      dispatch(
-        updateRecipe(currentId, { ...recipeData, name: user?.result?.name })
-      );
-    } else {
       dispatch(
         createRecipe({ ...recipeData, name: user?.result?.name }, navigate)
       );
-    }
 
     clear();
   };
@@ -83,7 +70,6 @@ const Form = ({ currentId, setCurrentId }) => {
   }
 
   const clear = () => {
-    setCurrentId(null);
     setRecipeData({
       title: "",
       dishType: "",
@@ -103,7 +89,7 @@ const Form = ({ currentId, setCurrentId }) => {
         onSubmit={handleSubmit}
       >
         <Typography variant="h6">
-          {currentId ? "Editing" : "Creating"} a recipe
+          Creating a recipe
         </Typography>
         <TextField
           name="title"
@@ -195,4 +181,4 @@ const Form = ({ currentId, setCurrentId }) => {
   );
 };
 
-export default Form;
+export default RecipeCreate;
