@@ -61,6 +61,14 @@ const Navbar = () => {
               {user?.result.name}
             </Typography>
             <Button
+              component={Link}
+              to="/recipes/create"
+              variant="contained"
+              color="primary"
+            >
+              Create a recipe
+            </Button>
+            <Button
               variant="contained"
               className={classes.logout}
               color="secondary"
@@ -71,14 +79,6 @@ const Navbar = () => {
           </div>
         ) : (
           <div>
-            <Button
-              component={Link}
-              to="/recipes/create"
-              variant="contained"
-              color="secondary"
-            >
-              Create a recipe
-            </Button>
             <Button
               component={Link}
               to="/auth"

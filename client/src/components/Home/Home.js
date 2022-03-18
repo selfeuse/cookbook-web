@@ -5,7 +5,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import ChipInput from 'material-ui-chip-input';
 
 import Recipes from '../Recipe/Recipes/Recipes';
-import Form from '../Form/Form';
 import { getRecipesBySearch } from '../../actions/recipes';
 import useStyles from './styles';
 import Pagination from '../Pagination';
@@ -17,7 +16,6 @@ function useQuery() {
 const Home = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const [currentId, setCurrentId] = useState(null);
     const [search, setSearch] = useState('');
     const [tags, setTags] = useState([]);
     const query = useQuery();
@@ -49,7 +47,7 @@ const Home = () => {
             <Container maxWidth="xl">
                 <Grid className={classes.gridContainer} container justifyContent="space-between" alignItems="stretch" spacing={3}>
                     <Grid item xs={12} sm={6} md={9}>
-                        <Recipes setCurrentId={setCurrentId} />
+                        <Recipes />
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
                         <AppBar className={classes.appBarSearch} position="static" color="inherit">
@@ -57,7 +55,6 @@ const Home = () => {
                             <ChipInput style={{ margin: '10px 0' }} value={tags} onAdd={handleAdd} onDelete={handleDelete} label="Search tags" variant="outlined" />
                             <Button onClick={searchRecipe} className={classes.searchButton} variant="contained" color="primary">Search</Button>
                         </AppBar>
-                        <Form currentId={currentId} setCurrentId={setCurrentId} />
                         {(!searchQuery && !tags.length) && (
                             <Paper className={classes.pagination} elevation={6}>
                                 <Pagination page={page} />
