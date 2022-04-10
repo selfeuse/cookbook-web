@@ -9,6 +9,7 @@ module.exports = (sequelize, Sequelize) => {
     recipeId: {
       type: Sequelize.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
     },
     userId: {
       type: Sequelize.INTEGER,
