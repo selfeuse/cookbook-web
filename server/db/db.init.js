@@ -1,60 +1,62 @@
-const { sequelize } = require("./db.con");
 const Sequelize = require('sequelize');
+const dbConfig = require("./db.config.js");
 
-const Users = require("../models/users.model.js")(sequelize, Sequelize.DataTypes);
-const Recipes = require("../models/recipes.model.js")(sequelize, Sequelize.DataTypes);
-const Ingredients = require("../models/ingredients.model.js")(sequelize, Sequelize.DataTypes);
-const Instructions = require("../models/instructions.model.js")(sequelize, Sequelize.DataTypes);
-const RecipesIngredients = require(
+const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
+  host: dbConfig.HOST,
+  dialect: dbConfig.dialect,
+  operatorsAliases: false,
+  pool: {
+    max: dbConfig.pool.max,
+    min: dbConfig.pool.min,
+    acquire: dbConfig.pool.acquire,
+    idle: dbConfig.pool.idle
+  }
+});
+
+const db = {};
+
+db.Sequelize = Sequelize;
+db.sequelize = sequelize;
+
+db.ingredients = require("../models/ingredients.model.js")(sequelize, Sequelize.DataTypes);
+db.instructions = require("../models/instructions.model.js")(sequelize, Sequelize.DataTypes);
+db.recipesIngredients = require(
   "../models/recipes_ingredients.model.js"
 )(sequelize, Sequelize.DataTypes);
+db.recipes = require("../models/recipes.model.js")(sequelize, Sequelize.DataTypes);
+db.users = require("../models/users.model.js")(sequelize, Sequelize.DataTypes);
 
-sequelize
-  .authenticate()
-  .then(async () => {
-    defineRelations();
-    //await Users.sync({ force: true });
-    //await Recipes.sync({ force: true });
-    //await Ingredients.sync({ force: true });
-    //await Instructions.sync({ force: true });
-    //await RecipesIngredients.sync({ force: true });
 
-    await sequelize.sync({ force: false });
+const common = (options) => ({
+  ...options,
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+
+db.users.hasMany(db.recipes, common({ foreignKey: "user_id" }));
+db.recipes.hasMany(db.instructions, common({ foreignKey: "recipe_id" }));
+
+db.recipes.belongsToMany(
+  db.ingredients,
+  common({
+    through: "t_recipes_ingredients",
+    foreignKey: "recipe_id",
+    otherKey: "ingredient_id",
   })
-  .catch((err) => {
-    console.error(err);
-  });
+);
 
-const defineRelations = () => {
-  const common = (options) => ({
-    ...options,
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
-  });
+db.ingredients.belongsToMany(
+  db.recipes,
+  common({
+    through: "t_recipes_ingredients",
+    foreignKey: "ingredient_id",
+    otherKey: "recipe_id",
+  })
+);
 
-  Users.hasMany(Recipes, common({ foreignKey: "user_id" }));
-  Recipes.hasMany(Instructions, common({ foreignKey: "recipe_id" }));
+db.recipesIngredients.belongsTo(db.recipes, { foreignKey: "recipe_id" });
+db.recipesIngredients.belongsTo(db.ingredients, { foreignKey: "ingredient_id" });
+db.recipes.hasMany(db.recipesIngredients, common({ foreignKey: "recipe_id" }));
+db.ingredients.hasMany(db.recipesIngredients, common({ foreignKey: "ingredient_id" }));
 
-  Recipes.belongsToMany(
-    Ingredients,
-    common({
-      through: "t_recipes_ingredients",
-      foreignKey: "recipe_id",
-      otherKey: "ingredient_id",
-    })
-  );
-
-  Ingredients.belongsToMany(
-    Recipes,
-    common({
-      through: "t_recipes_ingredients",
-      foreignKey: "ingredient_id",
-      otherKey: "recipe_id",
-    })
-  );
-
-  RecipesIngredients.belongsTo(Recipes, { foreignKey: "recipe_id" });
-  RecipesIngredients.belongsTo(Ingredients, { foreignKey: "ingredient_id" });
-  Recipes.hasMany(RecipesIngredients, common({ foreignKey: "recipe_id" }));
-  Ingredients.hasMany(RecipesIngredients, common({ foreignKey: "ingredient_id" }));
-};
+module.exports = db;
