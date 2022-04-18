@@ -12,10 +12,9 @@ app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
 
-const db = require("./models");
-db.sequelize.sync();
+const db = require("./db/db.init");
 
-require("./routes/users.js")(app);
+//require("./routes/users.js")(app);
 
 const PORT = process.env.PORT || 5000;
 
