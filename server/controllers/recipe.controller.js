@@ -1,6 +1,6 @@
-const db = require("../models");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const db = require("../db/db.init");
+const ingredients = require("../controllers/ingredients.controller.js");
+const instructions = require("../controllers/instructions.controller.js");
 
 const Recipe = db.recipes;
 
@@ -11,7 +11,7 @@ exports.getRecipes = async (req, res) => {
     const LIMIT = 6;
     const startIndex = (Number(page) - 1) * LIMIT;
 
-    const total = await Recipe.Count();
+    const total = await Recipe.count();
 
     const recipes = Recipe.findAll({
       order: [["id", "ASC"]],
@@ -30,11 +30,11 @@ exports.getRecipes = async (req, res) => {
   }
 };
 
-exports.getRecipe = async (req, res) => {
+exports.getRecipeById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const recipe = await Recipe.findOne({ where: { id: id } });
+    const recipe = await Recipe.findOne({ where: { id } });
 
     if (!recipe) {
       return res.status(404).json({ message: "Recipe doesn't exists." });
@@ -48,21 +48,20 @@ exports.getRecipe = async (req, res) => {
 };
 
 exports.createRecipe = async (req, res) => {
-  const { id } = req.params;
+  const recipe = req.body.recipe;
 
   const recipeToAdd = {
-    userId: req.userId,
-    title: req.body.title,
-    dishType: req.body.dishType,
-    image: req.body.image,
-    duration: req.body.duration,
-    rate: req.body.rate,
-    tags: req.body.tags,
+    ...recipe,
+    user_id: req.userId,
   };
 
   try {
     Recipe.create(recipeToAdd).then((newRecipe) => {
-      return res.status(200).json({ newRecipe });
+      
+      const newInstructions = instructions.createInstructions(req.body.instructions, newRecipe.id)
+      const newIngredients = ingredients.createIngredients(req.body.ingredients, newRecipe.id)
+      
+      return res.status(200).json({ newRecipe, newIngredients, newInstructions });
     });
 
   } catch (error) {
