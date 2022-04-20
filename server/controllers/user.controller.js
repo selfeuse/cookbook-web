@@ -6,13 +6,13 @@ exports.signin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = UserService.getUser(email);
+    const user = await UserService.getUser(email);
 
     if (!user) {
       return res.status(404).json({ message: "User doesn't exists." });
     }
 
-    const validPassword = PasswordManager.areTheSame(
+    const validPassword = await PasswordManager.areTheSame(
       password,
       user.password
     );
@@ -34,13 +34,13 @@ exports.signup = async (req, res) => {
   const { email, password, confirmPassword, firstName, lastName } = req.body;
 
   try {
-    const user = UserService.getUser(email);
+    const user = await UserService.getUser(email);
 
     if (user) {
       return res.status(404).json({ message: "User already exists." });
     }
 
-    const validPassword = PasswordManager.areTheSame(password, confirmPassword);
+    const validPassword = await PasswordManager.areTheSame(password, confirmPassword);
 
     if (!validPassword)
       return res.status(404).json({ message: "Passwords don't match." });
@@ -48,7 +48,7 @@ exports.signup = async (req, res) => {
     const userToAdd = {
       username: `${firstName} ${lastName}`,
       password: email,
-      email: PasswordManager.encryptPassword(password),
+      email: await PasswordManager.encryptPassword(password),
     };
 
     const newUser = UserService.createUser(userToAdd);

@@ -1,12 +1,10 @@
-const db = require("../db/db.init");
-
-const Instruction = db.instructions;
+const InstructionService = require("../services/Instruction.service.js");
 
 exports.getInstructionsByRecipeId = async (req, res) => {
     const { id } = req.params;
   
     try {
-      const instruction = await Instruction.findOne({ where: { recipe_id: id } });
+      const instruction = await InstructionService.getIngredientByRecipeId(id);
   
       if (!instruction) {
         return res.status(404).json({ message: "Instruction doesn't exists." });
@@ -23,7 +21,7 @@ exports.getInstructionById = async (req, res) => {
     const { id } = req.params;
   
     try {
-      const instruction = await Instruction.findOne({ where: { id } });
+      const instruction = await InstructionService.getInstructionById(id);
   
       if (!instruction) {
         return res.status(404).json({ message: "Instruction doesn't exists." });
@@ -36,38 +34,13 @@ exports.getInstructionById = async (req, res) => {
     }
 }
 
-exports.createInstruction = async (instruction, recipeId) => {
-    try {
-        const instructionToAdd = {
-            ...instruction,
-            recipe_id: recipeId
-        }
-
-        Instruction.create(instructionToAdd).then((newInstruction) => {
-          return newInstruction;
-        });
-    } catch (error) {
-      console.log(error);
-    }
-}
-
-exports.createInstructions = async (instructionsToAdd, recipeId) => {  
-    try {
-        let newInstructions = instructionsToAdd.map((instruction) => {
-            return this.createInstruction(instruction, recipeId);
-        });
-  
-      return(newInstructions);
-    } catch (error) {
-      console.log(error);
-    }
-}
-
 exports.deleteInstruction = async (req, res) => {
   const { id } = req.params;
 
   try {
-    await Instruction.destroy({ where: { id } });
+    await InstructionService.deleteInstruction(id);
+
+    res.status(200);
   } catch (error) {
     console.log(error);
   }

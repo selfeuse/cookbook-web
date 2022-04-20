@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 class TokenGenerator {
-    static async generateToken(email, id) {
+    static generateToken(email, id) {
         jwt.sign(
         { email, id },
         "testSecretToken",
