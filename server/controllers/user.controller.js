@@ -21,7 +21,7 @@ exports.signin = async (req, res) => {
       return res.status(404).json({ message: "Invalid credentials." });
     }
 
-    const token = TokenGenerator.generateToken(user.email, user.userId);
+    const token = await TokenGenerator.generateToken(user.email, user.userId);
 
     return res.status(200).json({ result: user, token });
   } catch (err) {
@@ -40,22 +40,22 @@ exports.signup = async (req, res) => {
       return res.status(404).json({ message: "User already exists." });
     }
 
-    const validPassword = await PasswordManager.areTheSame(password, confirmPassword);
+    const validPassword = (password === confirmPassword);
 
     if (!validPassword)
       return res.status(404).json({ message: "Passwords don't match." });
 
     const userToAdd = {
       username: `${firstName} ${lastName}`,
-      password: email,
-      email: await PasswordManager.encryptPassword(password),
+      email: email,
+      password: await PasswordManager.encryptPassword(password),
     };
 
-    const newUser = UserService.createUser(userToAdd);
+    const newUser = await UserService.createUser(userToAdd);
 
     const token = TokenGenerator.generateToken(
       newUser.email,
-      newUser.userId
+      newUser.id
     );
 
     return res.status(200).json({ newUser, token });

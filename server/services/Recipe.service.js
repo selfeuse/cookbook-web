@@ -16,7 +16,7 @@ class RecipeService {
 
     const total = await this.countRecipes();
 
-    const recipes = Recipe.findAll({
+    const recipes = await Recipe.findAll({
       order: [["id", "ASC"]],
       offset: startIndex,
       limit: LIMIT,

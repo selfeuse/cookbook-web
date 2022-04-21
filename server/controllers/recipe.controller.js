@@ -1,12 +1,10 @@
-const ingredients = require("../controllers/ingredients.controller.js");
-const instructions = require("../controllers/instructions.controller.js");
 const RecipeService = require("../services/Recipe.service.js");
 
 exports.getRecipes = async (req, res) => {
   const { page } = req.query;
 
   try {
-    const result = RecipeService.getRecipes(page)
+    const result = await RecipeService.getRecipes(page)
 
     res.status(200).json(result);
   } catch (error) {
@@ -37,7 +35,7 @@ exports.createRecipe = async (req, res) => {
   const user_id = req.userId;
 
   try {
-    const result = RecipeService.createRecipe(recipe, user_id, req.body.instructions, req.body.ingredients)
+    const result = await RecipeService.createRecipe(recipe, user_id, req.body.instructions, req.body.ingredients)
     
     return res.status(200).json(result);
   } catch (error) {

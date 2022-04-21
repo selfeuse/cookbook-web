@@ -3,13 +3,17 @@ const db = require("../db/db.init");
 const User = db.users;
 
 class UserService {
-    static async getUser(email) {
-        return await User.findOne({ where: { email } });
-    }
+  static async getUser(email) {
+    return await User.findOne({ where: { email } }).then(data => {
+        if (data) return (data.toJSON());
+      });
+  }
 
-    static createUser(user) {
-        return User.create(user);
-    }
+  static async createUser(user) {
+    return await User.create(user).then(data => {
+        if (data) return (data.toJSON());
+      });
+  }
 }
 
 module.exports = UserService;
