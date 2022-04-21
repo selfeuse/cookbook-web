@@ -4,7 +4,7 @@ exports.getIngredientById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const ingredient = await IngredientService.getIngredientById(id);
+    const ingredient = await IngredientService.getById(id);
 
     if (!ingredient) {
       return res.status(404).json({ message: "Ingredient doesn't exists." });

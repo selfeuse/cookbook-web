@@ -6,18 +6,18 @@ exports.signin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await UserService.getUser(email);
+    const user = await UserService.get(email);
 
     if (!user) {
       return res.status(404).json({ message: "User doesn't exists." });
     }
 
-    const validPassword = await PasswordManager.areTheSame(
+    const isValidPassword  = await PasswordManager.areTheSame(
       password,
       user.password
     );
 
-    if (!validPassword) {
+    if (!isValidPassword) {
       return res.status(404).json({ message: "Invalid credentials." });
     }
 
@@ -34,15 +34,15 @@ exports.signup = async (req, res) => {
   const { email, password, confirmPassword, firstName, lastName } = req.body;
 
   try {
-    const user = await UserService.getUser(email);
+    const user = await UserService.get(email);
 
     if (user) {
       return res.status(404).json({ message: "User already exists." });
     }
 
-    const validPassword = (password === confirmPassword);
+    const isValidPassword = (password === confirmPassword);
 
-    if (!validPassword)
+    if (!isValidPassword)
       return res.status(404).json({ message: "Passwords don't match." });
 
     const userToAdd = {
@@ -51,7 +51,7 @@ exports.signup = async (req, res) => {
       password: await PasswordManager.encryptPassword(password),
     };
 
-    const newUser = await UserService.createUser(userToAdd);
+    const newUser = await UserService.create(userToAdd);
 
     const token = TokenGenerator.generateToken(
       newUser.email,

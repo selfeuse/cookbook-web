@@ -6,22 +6,22 @@ const RecipesIngredientsService = require("./RecipesIngredients.service");
 const Recipe = db.recipes;
 
 class RecipeService {
-  static async countRecipes() {
+  static async countAll() {
     return await Recipe.count();
   }
 
-  static async getRecipes(page) {
+  static async getAll(page) {
     const LIMIT = 6;
     const startIndex = (Number(page) - 1) * LIMIT;
 
-    const total = await this.countRecipes();
+    const total = await this.countAll();
 
     const recipes = await Recipe.findAll({
       order: [["id", "ASC"]],
       offset: startIndex,
       limit: LIMIT,
-    }).then(data => {
-      if (data) return (data.toJSON());
+    }).then((data) => {
+      return data?.toJSON();
     });
 
     return {
@@ -31,33 +31,43 @@ class RecipeService {
     };
   }
 
-  static async getRecipeById(id) {
-    return await Recipe.findOne({ where: { id } }).then(data => {
-      if (data) return (data.toJSON());
+  static async getById(id) {
+    return await Recipe.findOne({ where: { id } }).then((data) => {
+      return data?.toJSON();
     });
   }
 
-  static async createRecipe(recipe, user_id, instructions, ingredients) {
+  static async create(recipeData) {
     const recipeToAdd = {
-      ...recipe,
-      user_id,
+      ...recipeData.recipe,
+      user_id: recipeData.user_id,
     };
-  
-    const newRecipe = await Recipe.create(recipeToAdd).then(data => {
-      if (data) return (data.toJSON());
+
+    const newRecipe = await Recipe.create(recipeToAdd).then((data) => {
+      return data?.toJSON();
     });
 
-      const newInstructions = await InstructionService.createInstructions(instructions, newRecipe.id);
-      const newIngredients = await IngredientService.createIngredients(ingredients, newRecipe.id);
+    const newInstructions = await InstructionService.create(
+      recipeData.instructions,
+      newRecipe.id
+    );
+    const newIngredients = await IngredientService.create(
+      recipeData.ingredients,
+      newRecipe.id
+    );
 
-      newIngredients.forEach(async ingredient => {
-          await RecipesIngredientsService.createRecipeIngredient(ingredient.id, newRecipe.id, ingredient.quantity);
-      });
+    newIngredients.forEach(async (ingredient) => {
+      await RecipesIngredientsService.create(
+        ingredient.id,
+        newRecipe.id,
+        ingredient.quantity
+      );
+    });
 
-      return { newRecipe, newIngredients, newInstructions };
+    return { newRecipe, newIngredients, newInstructions };
   }
 
-  static async deleteRecipe(id) {
+  static async delete(id) {
     return await Recipe.destroy({ where: { id } });
   }
 }

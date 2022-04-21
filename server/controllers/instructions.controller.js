@@ -4,7 +4,7 @@ exports.getInstructionsByRecipeId = async (req, res) => {
     const { id } = req.params;
   
     try {
-      const instruction = await InstructionService.getIngredientByRecipeId(id);
+      const instruction = await InstructionService.getByRecipeId(id);
   
       if (!instruction) {
         return res.status(404).json({ message: "Instruction doesn't exists." });
@@ -21,7 +21,7 @@ exports.getInstructionById = async (req, res) => {
     const { id } = req.params;
   
     try {
-      const instruction = await InstructionService.getInstructionById(id);
+      const instruction = await InstructionService.getById(id);
   
       if (!instruction) {
         return res.status(404).json({ message: "Instruction doesn't exists." });
@@ -38,7 +38,7 @@ exports.deleteInstruction = async (req, res) => {
   const { id } = req.params;
 
   try {
-    await InstructionService.deleteInstruction(id);
+    await InstructionService.delete(id);
 
     res.status(200);
   } catch (error) {

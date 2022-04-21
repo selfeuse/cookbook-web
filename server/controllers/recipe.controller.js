@@ -4,7 +4,7 @@ exports.getRecipes = async (req, res) => {
   const { page } = req.query;
 
   try {
-    const result = await RecipeService.getRecipes(page)
+    const result = await RecipeService.getAll(page)
 
     res.status(200).json(result);
   } catch (error) {
@@ -17,7 +17,7 @@ exports.getRecipeById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const recipe = await RecipeService.getRecipeById(id);
+    const recipe = await RecipeService.getById(id);
 
     if (!recipe) {
       return res.status(404).json({ message: "Recipe doesn't exists." });
@@ -35,7 +35,14 @@ exports.createRecipe = async (req, res) => {
   const user_id = req.userId;
 
   try {
-    const result = await RecipeService.createRecipe(recipe, user_id, req.body.instructions, req.body.ingredients)
+    const data = {
+      recipe,
+      user_id,
+      instructions: req.body.instructions,
+      ingredients: req.body.ingredients
+    }
+
+    const result = await RecipeService.create(data)
     
     return res.status(200).json(result);
   } catch (error) {
