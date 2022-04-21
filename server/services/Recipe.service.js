@@ -20,6 +20,8 @@ class RecipeService {
       order: [["id", "ASC"]],
       offset: startIndex,
       limit: LIMIT,
+    }).then(data => {
+      if (data) return (data.toJSON());
     });
 
     return {
@@ -30,7 +32,9 @@ class RecipeService {
   }
 
   static async getRecipeById(id) {
-    return await Recipe.findOne({ where: { id } });
+    return await Recipe.findOne({ where: { id } }).then(data => {
+      if (data) return (data.toJSON());
+    });
   }
 
   static async createRecipe(recipe, user_id, instructions, ingredients) {
@@ -39,17 +43,18 @@ class RecipeService {
       user_id,
     };
   
-    await Recipe.create(recipeToAdd).then(async (newRecipe) => {
-      
-        const newInstructions = await InstructionService.createInstructions(instructions, newRecipe.id);
-        const newIngredients = await IngredientService.createIngredients(ingredients, newRecipe.id);
+    const newRecipe = await Recipe.create(recipeToAdd).then(data => {
+      if (data) return (data.toJSON());
+    });
 
-        newIngredients.forEach(async ingredient => {
-            await RecipesIngredientsService.createRecipeIngredient(ingredient.id, newRecipe.id, ingredient.quantity);
-        });
+      const newInstructions = await InstructionService.createInstructions(instructions, newRecipe.id);
+      const newIngredients = await IngredientService.createIngredients(ingredients, newRecipe.id);
 
-        return { newRecipe, newIngredients, newInstructions };
+      newIngredients.forEach(async ingredient => {
+          await RecipesIngredientsService.createRecipeIngredient(ingredient.id, newRecipe.id, ingredient.quantity);
       });
+
+      return { newRecipe, newIngredients, newInstructions };
   }
 
   static async deleteRecipe(id) {

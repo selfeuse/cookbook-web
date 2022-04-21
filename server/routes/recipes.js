@@ -3,7 +3,6 @@ module.exports = (app) => {
   const auth = require("../middleware/auth.js");
   var router = require("express").Router();
 
- // router.get("/search", recipes.getRecipesBySearch);
   router.get("/", recipes.getRecipes);
   router.get("/:id", recipes.getRecipeById);
   router.post("/", auth, recipes.createRecipe);

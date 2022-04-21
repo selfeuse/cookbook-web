@@ -10,7 +10,9 @@ class RecipesIngredientsService {
         quantity
     }
 
-    return await RecipesIngredients.create(recipesIngredientsToAdd);
+    return await RecipesIngredients.create(recipesIngredientsToAdd).then(data => {
+      if (data) return (data.toJSON());
+    });
   }
 }
 

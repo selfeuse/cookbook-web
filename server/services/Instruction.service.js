@@ -4,11 +4,15 @@ const Instruction = db.instructions;
 
 class InstructionService {
   static async getInstructionById(id) {
-    return await Instruction.findOne({ where: { id } });
+    return await Instruction.findOne({ where: { id } }).then(data => {
+      if (data) return (data.toJSON());
+    });
   }
 
   static async getInstructionsByRecipeId(recipe_id) {
-    return await Instruction.findAll({ where: { recipe_id } });
+    return await Instruction.findAll({ where: { recipe_id } }).then(data => {
+      if (data) return (data.toJSON());
+    });
   }
 
   static async createInstruction(instruction, recipeId) {
@@ -17,15 +21,17 @@ class InstructionService {
       recipe_id: recipeId,
     };
 
-    return await Instruction.create(instructionToAdd);
+    return await Instruction.create(instructionToAdd).then(data => {
+      if (data) return (data.toJSON());
+    });
   }
 
   static async createInstructions(instructions, recipe_id) {
-    let newInstructions = instructions.map(async (instruction) => {
+    let promises = instructions.map(async (instruction) => {
       return await this.createInstruction(instruction, recipe_id);
     });
 
-    return newInstructions;
+    return Promise.all(promises);
   }
 
   static async deleteInstruction(id) {
