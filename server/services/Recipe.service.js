@@ -46,12 +46,12 @@ class RecipeService {
     const newRecipe = await Recipe.create(recipeToAdd).then((data) => {
       return data?.toJSON();
     });
-
-    const newInstructions = await InstructionService.create(
+    
+    const newInstructions = await InstructionService.createAll(
       recipeData.instructions,
       newRecipe.id
     );
-    const newIngredients = await IngredientService.create(
+    const newIngredients = await IngredientService.createAll(
       recipeData.ingredients,
       newRecipe.id
     );
