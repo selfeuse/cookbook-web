@@ -1,15 +1,15 @@
-import jwt from 'jsonwebtoken';
+const jwt = require("jsonwebtoken");
 
-const auth = async (req, res, next) => {
+module.exports = (req, res, next) => {
     try {
-        const token = req.headers.authorization.split(" ")[1];
+        const token = req.headers.authorization?.split(" ")[1];
         const isCustomAuth = token.length < 500;
 
         let decodedData;
 
         if (token && isCustomAuth) {
             decodedData = jwt.verify(token, 'testSecretToken');
-
+            
             req.userId = decodedData?.id;
         } else {
             decodedData = jwt.decode(token);
@@ -22,5 +22,3 @@ const auth = async (req, res, next) => {
         console.log(error);
     }
 }
-
-export default auth;
